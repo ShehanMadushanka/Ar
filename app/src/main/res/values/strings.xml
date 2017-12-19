@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">AR Location-based</string>
+    <string name="gps_is_loading">GPS is loading...</string>
+    <string name="next_nwp">Next  WP</string>
+    <string name="back_nwp">Back  WP</string>
+</resources>
