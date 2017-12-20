@@ -12,38 +12,43 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.opengl.Matrix;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import ng.dat.ar.util.ViewAnimationUtils;
+
 public class ARActivity extends AppCompatActivity implements SensorEventListener, LocationListener {
 
+    public static final int REQUEST_LOCATION_PERMISSIONS_CODE = 0;
     final static String TAG = "ARActivity";
+    private final static int REQUEST_CAMERA_PERMISSIONS_CODE = 11;
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0; // 10 meters
+    private static final long MIN_TIME_BW_UPDATES = 0;//1000 * 60 * 1; // 1 minute
+    public Location location;
+    boolean isGPSEnabled;
+    boolean isNetworkEnabled;
+    boolean locationServiceAvailable;
     private SurfaceView surfaceView;
     private FrameLayout cameraContainerLayout;
     private AROverlayView arOverlayView;
     private Camera camera;
     private ARCamera arCamera;
     private TextView tvCurrentLocation;
-
     private SensorManager sensorManager;
-    private final static int REQUEST_CAMERA_PERMISSIONS_CODE = 11;
-    public static final int REQUEST_LOCATION_PERMISSIONS_CODE = 0;
-
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0; // 10 meters
-    private static final long MIN_TIME_BW_UPDATES = 0;//1000 * 60 * 1; // 1 minute
-
     private LocationManager locationManager;
-    public Location location;
-    boolean isGPSEnabled;
-    boolean isNetworkEnabled;
-    boolean locationServiceAvailable;
+    private Button btnBackWP;
+    private Button btnNextWP;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +60,49 @@ public class ARActivity extends AppCompatActivity implements SensorEventListener
         surfaceView = (SurfaceView) findViewById(R.id.surface_view);
         tvCurrentLocation = (TextView) findViewById(R.id.tv_current_location);
         arOverlayView = new AROverlayView(this);
+
+        btnBackWP = (Button) findViewById(R.id.btn_back_wp);
+        btnNextWP = (Button) findViewById(R.id.btn_next_wp);
+        final View view = findViewById(R.id.main_layout_id);
+
+        final RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final RelativeLayout.LayoutParams params3 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final RelativeLayout.LayoutParams params4 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        params1.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        params1.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        params1.setMargins(20,20,20,20);
+        params2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        params2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params2.setMargins(20,20,20,20);
+
+        params3.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        params3.addRule(RelativeLayout.ABOVE, R.id.main_layout_id);
+        params4.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params4.addRule(RelativeLayout.ABOVE, R.id.main_layout_id);
+
+        btnBackWP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                ViewAnimationUtils.collapse(view);
+                view.setVisibility(View.GONE);
+                btnBackWP.setLayoutParams(params1);
+                btnNextWP.setLayoutParams(params2);
+            }
+        });
+
+        btnNextWP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                ViewAnimationUtils.expand(view);
+                view.setVisibility(View.VISIBLE);
+                btnBackWP.setLayoutParams(params3);
+                btnNextWP.setLayoutParams(params4);
+
+            }
+        });
+
     }
 
     @Override
@@ -113,12 +161,12 @@ public class ARActivity extends AppCompatActivity implements SensorEventListener
 
     private void initCamera() {
         int numCams = Camera.getNumberOfCameras();
-        if(numCams > 0){
-            try{
+        if (numCams > 0) {
+            try {
                 camera = Camera.open();
                 camera.startPreview();
                 arCamera.setCamera(camera);
-            } catch (RuntimeException ex){
+            } catch (RuntimeException ex) {
                 Toast.makeText(this, "Camera not found", Toast.LENGTH_LONG).show();
             }
         }
@@ -133,7 +181,7 @@ public class ARActivity extends AppCompatActivity implements SensorEventListener
     }
 
     private void releaseCamera() {
-        if(camera != null) {
+        if (camera != null) {
             camera.setPreviewCallback(null);
             camera.stopPreview();
             arCamera.setCamera(null);
@@ -173,19 +221,19 @@ public class ARActivity extends AppCompatActivity implements SensorEventListener
 
     private void initLocationService() {
 
-        if ( Build.VERSION.SDK_INT >= 23 &&
-                ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED) {
-            return  ;
+        if (Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
         }
 
-        try   {
+        try {
             this.locationManager = (LocationManager) this.getSystemService(this.LOCATION_SERVICE);
 
             // Get GPS and network status
             this.isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             this.isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-            if (!isNetworkEnabled && !isGPSEnabled)    {
+            if (!isNetworkEnabled && !isGPSEnabled) {
                 // cannot get location
                 this.locationServiceAvailable = false;
             }
@@ -196,30 +244,30 @@ public class ARActivity extends AppCompatActivity implements SensorEventListener
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                         MIN_TIME_BW_UPDATES,
                         MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                if (locationManager != null)   {
+                if (locationManager != null) {
                     location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     updateLatestLocation();
                 }
             }
 
-            if (isGPSEnabled)  {
+            if (isGPSEnabled) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                         MIN_TIME_BW_UPDATES,
                         MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
 
-                if (locationManager != null)  {
+                if (locationManager != null) {
                     location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     updateLatestLocation();
                 }
             }
-        } catch (Exception ex)  {
+        } catch (Exception ex) {
             Log.e(TAG, ex.getMessage());
 
         }
     }
 
     private void updateLatestLocation() {
-        if (arOverlayView !=null && location != null) {
+        if (arOverlayView != null && location != null) {
             arOverlayView.updateCurrentLocation(location);
             tvCurrentLocation.setText(String.format("lat: %s \nlon: %s \naltitude: %s \n",
                     location.getLatitude(), location.getLongitude(), location.getAltitude()));

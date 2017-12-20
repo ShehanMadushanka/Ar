@@ -1,40 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_ar"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="ng.dat.ar.ARActivity">
 
-    <FrameLayout
-        android:id="@+id/camera_container_layout"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <SurfaceView
-            android:id="@+id/surface_view"
+
+        <FrameLayout
+            android:id="@+id/camera_container_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </FrameLayout>
+            android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tv_current_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:textColor="@android:color/white"
-        android:text="@string/gps_is_loading"/>
+            <SurfaceView
+                android:id="@+id/surface_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
 
-    <Button
-        android:layout_gravity="bottom|end"
-        android:text="@string/next_nwp"
-        android:alpha="0.8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tv_current_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@string/gps_is_loading"
+            android:textColor="@android:color/white" />
 
-    <Button
-        android:layout_gravity="bottom|start"
-        android:text="@string/back_nwp"
-        android:alpha="0.8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-</FrameLayout>
+        <Button
+            android:id="@+id/btn_next_wp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:alpha="0.8"
+            android:layout_margin="5dp"
+            android:background="@drawable/btn_background"
+            android:drawableEnd="@drawable/rotate_right"
+            android:text="@string/next_nwp" />
+        <!--app:layout_behavior="android.support.design.widget.Floating"-->
+        <Button
+            android:id="@+id/btn_back_wp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/main_layout_id"
+            android:layout_margin="5dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:alpha="0.8"
+            android:background="@drawable/btn_background"
+            android:drawableStart="@drawable/rotate_left"
+            android:text="@string/back_nwp" />
+
+        <RelativeLayout
+            android:id="@+id/main_layout_id"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/transparent"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:rotation="45"
+                android:src="@drawable/view_triangle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:background="@android:color/white"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/ic_wifi" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:text="LankaCom"
+                            android:textColor="#b82e2f"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:text="public wi-fi"
+                            android:textColor="#7f7f7f" />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/fragment_history_bottom_sheet_delete"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="end|top"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/bg_connected_round"
+                        android:padding="25dp"
+                        android:src="@drawable/chain_links"
+                        android:tint="@android:color/white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end|top"
+                        android:layout_marginRight="10dp"
+                        android:text="Connected"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>
