@@ -1,7 +1,10 @@
 package ng.dat.ar;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -14,20 +17,23 @@ import android.opengl.Matrix;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import ng.dat.ar.util.ViewAnimationUtils;
-
-public class ARActivity extends AppCompatActivity implements SensorEventListener, LocationListener {
+public class ARActivity extends AppCompatActivity implements SensorEventListener, LocationListener, AROverlayView.OnPointClickListener {
 
     public static final int REQUEST_LOCATION_PERMISSIONS_CODE = 0;
     final static String TAG = "ARActivity";
@@ -38,6 +44,9 @@ public class ARActivity extends AppCompatActivity implements SensorEventListener
     boolean isGPSEnabled;
     boolean isNetworkEnabled;
     boolean locationServiceAvailable;
+    int tar;
+    AROverlayView.OnPointClickListener listener;
+    ImageView icwifi;
     private SurfaceView surfaceView;
     private FrameLayout cameraContainerLayout;
     private AROverlayView arOverlayView;
@@ -48,7 +57,13 @@ public class ARActivity extends AppCompatActivity implements SensorEventListener
     private LocationManager locationManager;
     private Button btnBackWP;
     private Button btnNextWP;
-
+    private TextView txtDistance;
+    private TextView txtName;
+    private View view;
+    private RelativeLayout.LayoutParams params1;
+    private RelativeLayout.LayoutParams params2;
+    private RelativeLayout.LayoutParams params3;
+    private RelativeLayout.LayoutParams params4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,47 +74,23 @@ public class ARActivity extends AppCompatActivity implements SensorEventListener
         cameraContainerLayout = (FrameLayout) findViewById(R.id.camera_container_layout);
         surfaceView = (SurfaceView) findViewById(R.id.surface_view);
         tvCurrentLocation = (TextView) findViewById(R.id.tv_current_location);
-        arOverlayView = new AROverlayView(this);
-
-        btnBackWP = (Button) findViewById(R.id.btn_back_wp);
+        arOverlayView = new AROverlayView(this, this);
+        icwifi = (ImageView) findViewById(R.id.img_wifi);
         btnNextWP = (Button) findViewById(R.id.btn_next_wp);
-        final View view = findViewById(R.id.main_layout_id);
-
-        final RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        final RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        final RelativeLayout.LayoutParams params3 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        final RelativeLayout.LayoutParams params4 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        params1.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        params1.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-        params1.setMargins(20,20,20,20);
-        params2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        params2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        params2.setMargins(20,20,20,20);
-
-        params3.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-        params3.addRule(RelativeLayout.ABOVE, R.id.main_layout_id);
-        params4.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        params4.addRule(RelativeLayout.ABOVE, R.id.main_layout_id);
-
-        btnBackWP.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                ViewAnimationUtils.collapse(view);
-                view.setVisibility(View.GONE);
-                btnBackWP.setLayoutParams(params1);
-                btnNextWP.setLayoutParams(params2);
-            }
-        });
+        btnBackWP = (Button) findViewById(R.id.btn_back_wp);
 
         btnNextWP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                ViewAnimationUtils.expand(view);
-                view.setVisibility(View.VISIBLE);
-                btnBackWP.setLayoutParams(params3);
-                btnNextWP.setLayoutParams(params4);
+                change();
+            }
+        });
 
+
+        btnBackWP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                change2();
             }
         });
 
@@ -291,6 +282,126 @@ public class ARActivity extends AppCompatActivity implements SensorEventListener
 
     @Override
     public void onProviderDisabled(String s) {
+
+    }
+
+    @Override
+    public void onClick(String distance, String name) {
+
+        btnBackWP = (Button) findViewById(R.id.btn_back_wp);
+        btnNextWP = (Button) findViewById(R.id.btn_next_wp);
+        view = findViewById(R.id.main_layout_id);
+        txtDistance = (TextView) view.findViewById(R.id.tv_distance);
+        txtName = (TextView) view.findViewById(R.id.tv_name);
+        txtDistance.setText(distance + "km");
+        txtName.setText(name);
+
+        params1 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params3 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params4 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        params1.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        params1.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        params1.setMargins(20, 20, 20, 20);
+        params2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        params2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params2.setMargins(20, 20, 20, 20);
+
+        params3.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        params3.addRule(RelativeLayout.ABOVE, R.id.main_layout_id);
+        params3.setMargins(20, 0, 0, 0);
+        params4.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params4.addRule(RelativeLayout.ABOVE, R.id.main_layout_id);
+        params4.setMargins(0, 0, 20, 0);
+
+        if (!distance.equals("") && !name.equals("")) {
+
+            if (view.getVisibility() == View.VISIBLE) {
+                Animation bottomDown = AnimationUtils.loadAnimation(ARActivity.this,
+                        R.anim.bottom_down);
+                view.startAnimation(bottomDown);
+                bottomDown.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                        btnNextWP.startAnimation(animation);
+                        btnBackWP.startAnimation(animation);
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        btnBackWP.setLayoutParams(params1);
+                        btnNextWP.setLayoutParams(params2);
+                        view.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+            } else {
+                Animation bottomUp = AnimationUtils.loadAnimation(ARActivity.this,
+                        R.anim.bottom_up);
+                view.startAnimation(bottomUp);
+                view.setVisibility(View.VISIBLE);
+                btnNextWP.startAnimation(bottomUp);
+                btnBackWP.startAnimation(bottomUp);
+                btnBackWP.setLayoutParams(params3);
+                btnNextWP.setLayoutParams(params4);
+            }
+        } else {
+            if (view.getVisibility() == View.VISIBLE) {
+                Animation bottomDown = AnimationUtils.loadAnimation(ARActivity.this,
+                        R.anim.bottom_down);
+                view.startAnimation(bottomDown);
+                bottomDown.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                        btnNextWP.startAnimation(animation);
+                        btnBackWP.startAnimation(animation);
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        btnBackWP.setLayoutParams(params1);
+                        btnNextWP.setLayoutParams(params2);
+                        view.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+            }
+        }
+
+    }
+
+    private void change() {
+
+        @SuppressLint("RestrictedApi") final ContextThemeWrapper wrapper = new ContextThemeWrapper(this, R.style.DefaultScene);
+        @SuppressLint("RestrictedApi") Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_wifi, wrapper.getTheme());
+        icwifi.setImageDrawable(drawable);
+//
+//        theme.applyStyle(R.style.BaubleSmall, false);
+//
+//        drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_wifi, theme);
+//        icwifi.setImageDrawable(drawable);
+
+    }
+
+    private void change2() {
+
+        @SuppressLint("RestrictedApi") final ContextThemeWrapper wrapper = new ContextThemeWrapper(this, R.style.UpdatedScene);
+        @SuppressLint("RestrictedApi") Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_wifi, wrapper.getTheme());
+        icwifi.setImageDrawable(drawable);
+//
+//        theme.applyStyle(R.style.BaubleSmall, false);
+//
+//        drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_wifi, theme);
+//        icwifi.setImageDrawable(drawable);
 
     }
 }

@@ -11,10 +11,11 @@ import android.view.animation.Transformation;
 
 public class ViewAnimationUtils {
 
-    public static void expand(final View v) {
+    public static void expand(final View v, int targetHeight) {
         v.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        final int targtetHeight = v.getMeasuredHeight();
-
+        final int targtetHeight = 1;
+        //(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 160, v.getResources().getDisplayMetrics());
+        System.out.println(targtetHeight);
         v.getLayoutParams().height = 0;
         v.setVisibility(View.VISIBLE);
         Animation a = new Animation() {
@@ -32,12 +33,13 @@ public class ViewAnimationUtils {
             }
         };
 
-        a.setDuration((int) (targtetHeight / v.getContext().getResources().getDisplayMetrics().density));
+        a.setDuration((int) (targtetHeight / v.getContext().getResources().getDisplayMetrics().densityDpi));
         v.startAnimation(a);
     }
 
     public static void collapse(final View v) {
         final int initialHeight = v.getMeasuredHeight();
+        System.out.println("Initial : "+ initialHeight);
 
         Animation a = new Animation() {
             @Override

@@ -8,4 +8,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="UpdatedScene" parent="DefaultScene">
+        <item name="wifi_icon">#db486e</item>
+    </style>
+
+    <style name="DefaultScene">
+        <item name="wifi_icon">#fec758</item>
+    </style>
+
+    <declare-styleable name="Wifi">
+        <attr name="wifi_icon" format="color" />
+    </declare-styleable>
+
 </resources>

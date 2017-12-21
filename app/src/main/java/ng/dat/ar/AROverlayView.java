@@ -10,13 +10,11 @@ import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.opengl.Matrix;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import java.text.DecimalFormat;
@@ -25,7 +23,6 @@ import java.util.List;
 
 import ng.dat.ar.helper.LocationHelper;
 import ng.dat.ar.model.ARPoint;
-import ng.dat.ar.util.ViewAnimationUtils;
 
 /**
  * Created by ntdat on 1/13/17.
@@ -34,6 +31,7 @@ import ng.dat.ar.util.ViewAnimationUtils;
 public class AROverlayView extends View {
 
     private final Bitmap bitmap;
+    Canvas canvas;
     Context context;
     String distanceStr;
     String[] array = new String[4];
@@ -45,12 +43,12 @@ public class AROverlayView extends View {
     private List<ARPoint> arPoints;
     private float[][] pointsXY;
     private View view;
+    private OnPointClickListener listener;
 
-
-    public AROverlayView(Context context) {
+    public AROverlayView(Context context, OnPointClickListener listener) {
         super(context);
         this.context = context;
-
+        this.listener = listener;
         arPoints = new ArrayList<ARPoint>() {{
 //            add(new ARPoint("Loc 1", 6.91642923980966, 79.8887523036408, -30.5508425094059));
 //            add(new ARPoint("Loc 2", 6.92642923980966, 79.86687523036408, -30.8420074));
@@ -88,7 +86,10 @@ public class AROverlayView extends View {
     @SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas) {
+
         super.onDraw(canvas);
+
+        this.canvas = canvas;
 
         pointsXY = new float[arPoints.size()][5];
 
@@ -101,6 +102,11 @@ public class AROverlayView extends View {
         paint.setColor(Color.WHITE);
         paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
         paint.setTextSize(40);
+
+        Paint paint1 = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint1.setStyle(Paint.Style.STROKE);
+        paint1.setStrokeWidth(5);
+        paint1.setColor(Color.GREEN);
 
         Paint paint2 = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint2.setStyle(Paint.Style.STROKE);
@@ -149,6 +155,7 @@ public class AROverlayView extends View {
 
                 canvas.drawText(arPoints.get(i).getName(), x - (5 * arPoints.get(i).getName().length()), y - 30, paint);
                 canvas.drawText(arPoints.get(i).getDistance() + " km", x - (15 * arPoints.get(i).getDistance().length()), y - 1, paint2);
+                canvas.drawLine(540, 1250, x, y, paint1);
 
                 if (Float.parseFloat(getDistance(arPoints.get(i))) < 2f) {
                     canvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, 200, 200, false), x - (15 * arPoints.get(i).getDistance().length()), y - 250, paint4);
@@ -176,12 +183,24 @@ public class AROverlayView extends View {
             float yPoint = pointsXY[i][1];
             if (x > xPoint - 100 && x < xPoint + 100) {
                 if (y > yPoint - 100 && y < yPoint + 100) {
-                    Toast.makeText(context, "Distance: " + array[i], Toast.LENGTH_SHORT).show();
-//                    ARActivity.showSnackBar();
+//                    Toast.makeText(context, "Distance: " + array[i], Toast.LENGTH_SHORT).show();
+                    listener.onClick(array[i], arPoints.get(i).getName());
+                } else {
+                    listener.onClick("", "");
                 }
             }
         }
         return false;
+    }
+
+    private void drawLine(float x, float y) {
+
+        Paint paint1 = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint1.setStyle(Paint.Style.STROKE);
+        paint1.setStrokeWidth(5);
+        paint1.setColor(Color.GREEN);
+
+        canvas.drawLine(540, 1250, x, y, paint1);
     }
 
     public String getDistance(ARPoint point) {
@@ -199,5 +218,9 @@ public class AROverlayView extends View {
 
         point.setDistance(distanceStr);
         return distanceStr;
+    }
+
+    public interface OnPointClickListener {
+        void onClick(String distance, String name);
     }
 }

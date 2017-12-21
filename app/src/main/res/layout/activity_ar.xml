@@ -36,6 +36,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:alpha="0.8"
+            android:visibility="visible"
             android:layout_margin="5dp"
             android:background="@drawable/btn_background"
             android:drawableEnd="@drawable/rotate_right"
@@ -45,6 +46,7 @@
             android:id="@+id/btn_back_wp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="visible"
             android:layout_above="@+id/main_layout_id"
             android:layout_margin="5dp"
             android:layout_alignParentBottom="true"
@@ -58,8 +60,8 @@
             android:id="@+id/main_layout_id"
             android:layout_width="match_parent"
             android:layout_height="160dp"
+            android:elevation="5dp"
             android:layout_alignParentBottom="true"
-            android:background="@android:color/transparent"
             android:visibility="gone">
 
             <ImageView
@@ -81,12 +83,13 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_weight="3"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:orientation="horizontal"
                     android:padding="16dp">
 
                     <ImageView
+                        android:id="@+id/img_wifi"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -99,6 +102,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/tv_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
@@ -107,6 +111,7 @@
                             android:textSize="18sp" />
 
                         <TextView
+                            android:id="@+id/tv_distance"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
@@ -127,22 +132,37 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_gravity="end|top"
-                        android:layout_margin="10dp"
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:layout_gravity="end|top|center"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginTop="10dp"
+                        android:visibility="gone"
                         android:background="@drawable/bg_connected_round"
-                        android:padding="25dp"
+                        android:padding="22dp"
                         android:src="@drawable/chain_links"
                         android:tint="@android:color/white" />
 
+                    <ImageView
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:visibility="visible"
+                        android:layout_gravity="end|top|center"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/bg_disconnected_round"
+                        android:padding="22dp"
+                        android:src="@drawable/broken_link"
+                        android:tint="@android:color/white" />
+
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end|top"
-                        android:layout_marginRight="10dp"
-                        android:text="Connected"
+                        android:layout_gravity="end"
+                        android:gravity="center"
+                        android:text="@string/connection_status"
                         android:textSize="15sp" />
+
                 </LinearLayout>
 
             </LinearLayout>

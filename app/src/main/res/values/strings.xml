@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">AR Location-based</string>
+    <string name="app_name">MAD Augmented Reality</string>
     <string name="gps_is_loading">GPS is loading...</string>
     <string name="next_nwp">Next \nWP </string>
     <string name="back_nwp">Back \nWP </string>
+    <string name="connection_status">Disconnected</string>
 </resources>
