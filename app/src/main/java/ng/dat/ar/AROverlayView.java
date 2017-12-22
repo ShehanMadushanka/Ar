@@ -34,7 +34,7 @@ public class AROverlayView extends View {
     Canvas canvas;
     Context context;
     String distanceStr;
-    String[] array = new String[4];
+    String[] array = new String[10];
     ColorFilter filter;
     ColorFilter filter2;
     ColorFilter filter3;
@@ -50,19 +50,18 @@ public class AROverlayView extends View {
         this.context = context;
         this.listener = listener;
         arPoints = new ArrayList<ARPoint>() {{
-//            add(new ARPoint("Loc 1", 6.91642923980966, 79.8887523036408, -30.5508425094059));
-//            add(new ARPoint("Loc 2", 6.92642923980966, 79.86687523036408, -30.8420074));
-//            add(new ARPoint("Loc 3", 6.93642923980966, 79.8687523036408, -30.8420074));
-//            add(new ARPoint("Loc 4", 6.94642923980966, 79.8687523036408, -30.8420074));
-//            add(new ARPoint("Loc 5", 6.95642923980966, 79.86687523036408, -30.8420074));
+            add(new ARPoint("Loc 1", 6.7026043, 80.3627333, -30.5508425094059));
+            add(new ARPoint("Saman Dewalaya", 6.6899268, 80.380158, -30.8420074));
+            add(new ARPoint("Kahangama", 6.7003906, 80.3637062, -30.8420074));
+            add(new ARPoint("Rathnapura", 6.704006, 80.3671733, -30.8420074));
+            add(new ARPoint("Pothgul Viharaya", 6.6807346, 80.38044, -30.8420074));
+            add(new ARPoint("Karangoda Vidyalaya", 6.6835611, 80.3735109, -30.8420074));
             add(new ARPoint("Cisco Tower", 6.9076323, 79.9448937, -30.8420074));
-//            add(new ARPoint("City Bank Building", 6.9076536, 79.944765, -30.8420074));
             add(new ARPoint("Mondy", 6.9021151, 79.9459666, -30.8420074));
             add(new ARPoint("Dialog Arcade", 6.9160039, 79.9437779, -30.8420074));
-//            add(new ARPoint("Mobitel CC", 6.9325084, 79.966771, -30.8420074));
             add(new ARPoint("SLT Public", 6.892868, 79.9293659, -30.8420074));
 
-            //6.9076323,79.9448937 || 6.9076536,79.944765,15z || 6.9021151,79.9459666,15 || 6.9160039,79.9437779,15 || 6.9325084,79.966771 || 6.9052548,79.9286577 || 6.9030426,79.9266639 || 6.892868,79.9293659
+            //6.7026043,80.3627333 || 6.6899268,80.380158 || 6.7003906,80.3637062 || 6.704006,80.3671733 || 6.6807346,80.38044 || 6.6835611,80.3735109
         }};
 
 //        Drawable sourceDrawable = getResources().getDrawable(R.drawable.ic_location);
@@ -157,7 +156,7 @@ public class AROverlayView extends View {
                 canvas.drawText(arPoints.get(i).getDistance() + " km", x - (15 * arPoints.get(i).getDistance().length()), y - 1, paint2);
                 canvas.drawLine(540, 1250, x, y, paint1);
 
-                if (Float.parseFloat(getDistance(arPoints.get(i))) < 2f) {
+                if (Float.parseFloat(getDistance(arPoints.get(i))) < 200f) {
                     canvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, 200, 200, false), x - (15 * arPoints.get(i).getDistance().length()), y - 250, paint4);
                 } else if (Float.parseFloat(getDistance(arPoints.get(i))) < 3f) {
                     canvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, 150, 150, false), x - (15 * arPoints.get(i).getDistance().length()), y - 200, paint5);
@@ -185,10 +184,16 @@ public class AROverlayView extends View {
                 if (y > yPoint - 100 && y < yPoint + 100) {
 //                    Toast.makeText(context, "Distance: " + array[i], Toast.LENGTH_SHORT).show();
                     listener.onClick(array[i], arPoints.get(i).getName());
-                } else {
-                    listener.onClick("", "");
                 }
+//                else {
+//                    listener.onClick("", "");
+//                }
             }
+//            else {
+//                if ()
+//
+//                listener.onClick("", "");
+//            }
         }
         return false;
     }
